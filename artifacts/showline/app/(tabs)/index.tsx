@@ -1,0 +1,217 @@
+import { Feather } from "@expo/vector-icons";
+import * as Haptics from "expo-haptics";
+import { useRouter } from "expo-router";
+import React from "react";
+import {
+  Platform,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { LineCard } from "@/components/LineCard";
+import { useShowLine } from "@/context/ShowLineContext";
+import { useLiveLine } from "@/context/LiveLineContext";
+import { useMessages } from "@/context/MessagesContext";
+import { useColors } from "@/hooks/useColors";
+
+export default function DashboardScreen() {
+  const colors = useColors();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const { lineStatuses, updateLineStatus } = useShowLine();
+  const { isLive, startSession } = useLiveLine();
+  const { fanMailMessages, collabMessages } = useMessages();
+
+  const topPad = Platform.OS === "web" ? 67 : insets.top;
+  const bottomPad = Platform.OS === "web" ? 84 : 0;
+
+  const fanMailUnread = fanMailMessages.filter((m) => !m.isBlocked && !m.reply).length;
+  const collabUnread = collabMessages.filter((m) => m.status === "New").length;
+  const vipUnread = fanMailMessages.filter((m) => m.isVIP && !m.reply).length;
+
+  const toggleFanMail = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    updateLineStatus("fanmail", lineStatuses.fanmail === "Open" ? "Closed" : "Open");
+  };
+
+  const toggleCollab = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    updateLineStatus(
+      "collab",
+      lineStatuses.collab === "Collect Only" ? "Closed" : "Collect Only"
+    );
+  };
+
+  return (
+    <ScrollView
+      style={[styles.scroll, { backgroundColor: colors.background }]}
+      contentContainerStyle={[
+        styles.content,
+        { paddingTop: topPad + 16, paddingBottom: bottomPad + 24 },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Header */}
+      <View style={styles.header}>
+        <View>
+          <Text style={[styles.greeting, { color: colors.mutedForeground }]}>Welcome back</Text>
+          <Text style={[styles.appName, { color: colors.foreground }]}>ShowLine</Text>
+        </View>
+        <Pressable
+          onPress={() => router.push("/upgrade")}
+          style={[styles.proBadge, { backgroundColor: colors.primary + "22", borderColor: colors.primary + "44" }]}
+        >
+          <Feather name="zap" size={12} color={colors.primary} />
+          <Text style={[styles.proBadgeText, { color: colors.primary }]}>Upgrade</Text>
+        </Pressable>
+      </View>
+
+      {/* Creator Number */}
+      <View style={[styles.numberCard, { backgroundColor: colors.card }]}>
+        <View style={styles.numberLeft}>
+          <View style={[styles.numberIcon, { backgroundColor: colors.primary + "22" }]}>
+            <Feather name="phone" size={18} color={colors.primary} />
+          </View>
+          <View>
+            <Text style={[styles.numberLabel, { color: colors.mutedForeground }]}>Your Creator Line</Text>
+            <Text style={[styles.number, { color: colors.foreground }]}>(555) 014-SHOW</Text>
+          </View>
+        </View>
+        <View style={[styles.comingSoonBadge, { backgroundColor: colors.muted }]}>
+          <Text style={[styles.comingSoonText, { color: colors.mutedForeground }]}>Real # Coming Soon</Text>
+        </View>
+      </View>
+
+      {/* Section title */}
+      <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>YOUR LINES</Text>
+
+      {/* FanMail Card */}
+      <LineCard
+        name="FanMail"
+        subtitle="General fan message inbox"
+        iconName="mail"
+        accentColor="#8B5CF6"
+        status={lineStatuses.fanmail}
+        unreadCount={fanMailUnread}
+        lastMessage={fanMailMessages[0]?.content}
+        onPress={() => router.push("/(tabs)/fanmail")}
+        primaryActionLabel={lineStatuses.fanmail === "Open" ? "Close Line" : "Open Line"}
+        primaryActionIcon={lineStatuses.fanmail === "Open" ? "x-circle" : "check-circle"}
+        onPrimaryAction={toggleFanMail}
+        secondaryActionLabel="View Inbox"
+        secondaryActionIcon="inbox"
+        onSecondaryAction={() => router.push("/(tabs)/fanmail")}
+      />
+
+      {/* LiveLine Card */}
+      <LineCard
+        name="LiveLine"
+        subtitle="Live show & call-in mode"
+        iconName="radio"
+        accentColor="#EF4444"
+        status={isLive ? "Live Now" : lineStatuses.liveline}
+        unreadCount={0}
+        lastMessage={isLive ? "Session active — taking messages" : "No active session"}
+        onPress={() => router.push("/(tabs)/liveline")}
+        primaryActionLabel={isLive ? "Go Live" : "Start Live"}
+        primaryActionIcon={isLive ? "radio" : "play-circle"}
+        onPrimaryAction={() => {
+          if (!isLive) startSession();
+          router.push("/(tabs)/liveline");
+        }}
+        secondaryActionLabel="Manage"
+        secondaryActionIcon="settings"
+        onSecondaryAction={() => router.push("/(tabs)/liveline")}
+      />
+
+      {/* Backstage Line Card */}
+      <LineCard
+        name="Backstage Line"
+        subtitle="VIP superfan-only access"
+        iconName="star"
+        accentColor="#F59E0B"
+        status={lineStatuses.backstage}
+        unreadCount={vipUnread}
+        lastMessage="For approved superfans only"
+        onPress={() => router.push("/backstage")}
+        primaryActionLabel="Open Backstage"
+        primaryActionIcon="external-link"
+        onPrimaryAction={() => router.push("/backstage")}
+        secondaryActionLabel="Manage VIPs"
+        secondaryActionIcon="users"
+        onSecondaryAction={() => router.push("/backstage")}
+      />
+
+      {/* Collab Line Card */}
+      <LineCard
+        name="Collab Line"
+        subtitle="Brands, sponsors & business"
+        iconName="briefcase"
+        accentColor="#3B82F6"
+        status={lineStatuses.collab}
+        unreadCount={collabUnread}
+        lastMessage={collabMessages[0]?.company ? `${collabMessages[0].company} — ${collabMessages[0].content.slice(0, 40)}...` : undefined}
+        onPress={() => router.push("/collab")}
+        primaryActionLabel={lineStatuses.collab === "Closed" ? "Open Line" : "Close Line"}
+        primaryActionIcon={lineStatuses.collab === "Closed" ? "check-circle" : "x-circle"}
+        onPrimaryAction={toggleCollab}
+        secondaryActionLabel="View Inquiries"
+        secondaryActionIcon="briefcase"
+        onSecondaryAction={() => router.push("/collab")}
+      />
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  scroll: { flex: 1 },
+  content: { paddingHorizontal: 16, gap: 4 },
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 20,
+  },
+  greeting: { fontSize: 13, fontFamily: "Inter_400Regular" },
+  appName: { fontSize: 28, fontFamily: "Inter_700Bold", letterSpacing: -1 },
+  proBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 100,
+    borderWidth: 1,
+  },
+  proBadgeText: { fontSize: 12, fontFamily: "Inter_600SemiBold" },
+  numberCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 24,
+  },
+  numberLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
+  numberIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  numberLabel: { fontSize: 11, fontFamily: "Inter_400Regular" },
+  number: { fontSize: 18, fontFamily: "Inter_700Bold", letterSpacing: 0.5 },
+  comingSoonBadge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
+  comingSoonText: { fontSize: 11, fontFamily: "Inter_500Medium" },
+  sectionTitle: {
+    fontSize: 11,
+    fontFamily: "Inter_600SemiBold",
+    letterSpacing: 1.5,
+    marginBottom: 8,
+  },
+});
