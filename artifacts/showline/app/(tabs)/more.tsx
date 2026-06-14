@@ -61,7 +61,8 @@ export default function MoreScreen() {
   const colors = useColors();
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { lineStatuses, creatorType, clearBlockedContacts } = useShowLine();
+  const { lineStatuses, creatorType, clearBlockedContacts, resetVIPProfiles, vipContacts } =
+    useShowLine();
   const { resetMessages, unblockAll } = useMessages();
   const { enabled, frequency, setEnabled, setFrequency } = useSimulation();
   const { sessions, clearHistory } = useSessionHistory();
@@ -89,7 +90,7 @@ export default function MoreScreen() {
   const handleResetData = () => {
     Alert.alert(
       "Reset Mock Data",
-      "This restores all fan messages and collab inquiries to demo state, and clears session history. Onboarding and settings are kept.",
+      "This restores all fan messages, VIP profiles, notes, and session history to demo state. Line settings and onboarding are kept.",
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -98,10 +99,11 @@ export default function MoreScreen() {
           onPress: () => {
             resetMessages();
             clearHistory();
+            resetVIPProfiles();
             showBanner({
               icon: "refresh-cw",
               title: "Mock Data Reset",
-              message: "Messages and session history restored to demo state",
+              message: "Messages, VIP profiles, and session history restored",
               color: "#10B981",
             });
           },
@@ -113,7 +115,7 @@ export default function MoreScreen() {
   const handleClearBlocked = () => {
     Alert.alert(
       "Clear Blocked Contacts",
-      "This will unblock all contacts and restore visibility of their messages.",
+      "This will unblock all contacts. VIP notes and access levels are not affected.",
       [
         { text: "Cancel", style: "cancel" },
         {
@@ -193,7 +195,7 @@ export default function MoreScreen() {
       <MenuItem
         icon="star"
         label="Backstage Line"
-        desc="VIP superfan-only inbox"
+        desc={`${vipContacts.length} VIP fan${vipContacts.length !== 1 ? "s" : ""}`}
         accentColor="#F59E0B"
         onPress={() => router.push("/backstage")}
       />
@@ -316,9 +318,7 @@ export default function MoreScreen() {
                       <Text
                         style={[
                           styles.freqBtnSub,
-                          {
-                            color: active ? "rgba(255,255,255,0.7)" : colors.border,
-                          },
+                          { color: active ? "rgba(255,255,255,0.7)" : colors.border },
                         ]}
                       >
                         {f.sublabel}
@@ -346,7 +346,7 @@ export default function MoreScreen() {
               Reset Mock Data
             </Text>
             <Text style={[styles.demoActionDesc, { color: colors.mutedForeground }]}>
-              Restore messages + clear session history
+              Restore messages, VIP profiles, and session history
             </Text>
           </View>
         </Pressable>
@@ -366,7 +366,7 @@ export default function MoreScreen() {
               Clear Blocked Contacts
             </Text>
             <Text style={[styles.demoActionDesc, { color: colors.mutedForeground }]}>
-              Unblock everyone, restore messages
+              Unblock everyone — VIP notes are kept
             </Text>
           </View>
         </Pressable>

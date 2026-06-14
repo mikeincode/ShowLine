@@ -1,11 +1,18 @@
-import type { FanMessage, CollabMessage, LiveQueueItem, VIPContact, BlockedContact } from "@/types";
+import type {
+  BlockedContact,
+  CollabMessage,
+  FanMessage,
+  LiveQueueItem,
+  VIPContact,
+} from "@/types";
 
 export const INITIAL_FAN_MESSAGES: FanMessage[] = [
   {
     id: "fm1",
     sender: "RachelWrites",
     handle: "@rachelwrites_",
-    content: "Your episode on burnout literally saved me this week. Thank you so much for being so honest about it. Would love to hear a follow-up!",
+    content:
+      "Your episode on burnout literally saved me this week. Thank you so much for being so honest about it. Would love to hear a follow-up!",
     timestamp: "2m ago",
     tags: ["Fan Love", "Topic Idea"],
     isPinned: true,
@@ -18,7 +25,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm2",
     sender: "TechBroTed",
     handle: "@techbroted99",
-    content: "What's your setup for recording? I've been trying to figure out the audio chain you use. Any chance you do a behind-the-scenes episode?",
+    content:
+      "What's your setup for recording? I've been trying to figure out the audio chain you use. Any chance you do a behind-the-scenes episode?",
     timestamp: "8m ago",
     tags: ["Question", "Topic Idea"],
     isPinned: false,
@@ -31,7 +39,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm3",
     sender: "MoonlightMira",
     handle: "@mira.moonlight",
-    content: "Ok so my little brother found your channel and now he won't stop quoting you lmao. You've officially got a new superfan in our house",
+    content:
+      "Ok so my little brother found your channel and now he won't stop quoting you lmao. You've officially got a new superfan in our house",
     timestamp: "22m ago",
     tags: ["Fan Love", "Story"],
     isPinned: false,
@@ -44,7 +53,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm4",
     sender: "anonymous_fan_4819",
     handle: undefined,
-    content: "Can you talk about how you handle trolls and negativity online? I'm starting my own channel and it's already rough out there.",
+    content:
+      "Can you talk about how you handle trolls and negativity online? I'm starting my own channel and it's already rough out there.",
     timestamp: "45m ago",
     tags: ["Question", "Needs Reply"],
     isPinned: false,
@@ -57,7 +67,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm5",
     sender: "CreativeKai",
     handle: "@kai.creates",
-    content: "The collab you did last month was EVERYTHING. Please do more stuff like that. I've watched it like 6 times.",
+    content:
+      "The collab you did last month was EVERYTHING. Please do more stuff like that. I've watched it like 6 times.",
     timestamp: "1h ago",
     tags: ["Fan Love", "Collab"],
     isPinned: false,
@@ -70,7 +81,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm6",
     sender: "JordanP",
     handle: "@jordanp_v",
-    content: "Genuine question — how do you deal with imposter syndrome after a big milestone? Just hit 10k and I feel more lost than ever.",
+    content:
+      "Genuine question — how do you deal with imposter syndrome after a big milestone? Just hit 10k and I feel more lost than ever.",
     timestamp: "2h ago",
     tags: ["Question", "Needs Reply"],
     isPinned: false,
@@ -83,7 +95,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm7",
     sender: "BizzyBee_Beatrix",
     handle: "@bizzy_beatrix",
-    content: "HEY so I found a typo in your newsletter from last Tuesday. Page 2, paragraph 3. You said 'their' instead of 'there' lol just wanted to help",
+    content:
+      "HEY so I found a typo in your newsletter from last Tuesday. Page 2, paragraph 3. You said 'their' instead of 'there' lol just wanted to help",
     timestamp: "3h ago",
     tags: ["Weird"],
     isPinned: false,
@@ -96,7 +109,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm8",
     sender: "SophieFromSeattle",
     handle: "@sophfromseattle",
-    content: "I drove 4 hours to see you at the Portland show and it was worth every mile. You should do more intimate shows like that!!",
+    content:
+      "I drove 4 hours to see you at the Portland show and it was worth every mile. You should do more intimate shows like that!!",
     timestamp: "4h ago",
     tags: ["Fan Love", "Story"],
     isPinned: false,
@@ -109,7 +123,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm9",
     sender: "QuietObserver_7",
     handle: undefined,
-    content: "I never comment anywhere but I've been listening since episode 3. You changed how I think about my career. Wanted you to know.",
+    content:
+      "I never comment anywhere but I've been listening since episode 3. You changed how I think about my career. Wanted you to know.",
     timestamp: "5h ago",
     tags: ["Fan Love"],
     isPinned: true,
@@ -122,7 +137,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm10",
     sender: "MarcoPolo_Streams",
     handle: "@marcopolo_live",
-    content: "Topic idea: do an episode on how to build a team as a solo creator. Like when do you know it's time to hire?",
+    content:
+      "Topic idea: do an episode on how to build a team as a solo creator. Like when do you know it's time to hire?",
     timestamp: "6h ago",
     tags: ["Topic Idea"],
     isPinned: false,
@@ -135,7 +151,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm11",
     sender: "NightOwlNadia",
     handle: "@nadia.nightowl",
-    content: "I listen to you every night before bed. My therapist says it counts as self-care lol. Thank you for existing",
+    content:
+      "I listen to you every night before bed. My therapist says it counts as self-care lol. Thank you for existing",
     timestamp: "7h ago",
     tags: ["Fan Love", "Story"],
     isPinned: false,
@@ -148,7 +165,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm12",
     sender: "TruthSeeker2049",
     handle: "@truth2049x",
-    content: "Your last video was honestly irresponsible. Did you even research before posting? I have receipts.",
+    content:
+      "Your last video was honestly irresponsible. Did you even research before posting? I have receipts.",
     timestamp: "8h ago",
     tags: ["Needs Reply"],
     isPinned: false,
@@ -174,7 +192,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm14",
     sender: "DeepDive_Dom",
     handle: "@deepdivedom",
-    content: "Can we get a deep dive episode on monetization for mid-size creators? There's nothing out there for the 50k-200k range.",
+    content:
+      "Can we get a deep dive episode on monetization for mid-size creators? There's nothing out there for the 50k-200k range.",
     timestamp: "12h ago",
     tags: ["Topic Idea", "Question"],
     isPinned: false,
@@ -187,7 +206,8 @@ export const INITIAL_FAN_MESSAGES: FanMessage[] = [
     id: "fm15",
     sender: "VIPVictor",
     handle: "@victor.vip",
-    content: "As a long time VIP, I just want to say the community you've built is unlike anything else. Keep going.",
+    content:
+      "As a long time VIP, I just want to say the community you've built is unlike anything else. Keep going.",
     timestamp: "1d ago",
     tags: ["Fan Love", "VIP"],
     isPinned: false,
@@ -203,7 +223,8 @@ export const INITIAL_COLLAB_MESSAGES: CollabMessage[] = [
     id: "col1",
     sender: "Priya Sharma",
     company: "Luminary Podcast Network",
-    content: "Hi! We're huge fans of your work and would love to explore a podcast network partnership. We're offering guaranteed revenue, production support, and distribution. Would love to set up a call this week.",
+    content:
+      "Hi! We're huge fans of your work and would love to explore a podcast network partnership. We're offering guaranteed revenue, production support, and distribution. Would love to set up a call this week.",
     timestamp: "1h ago",
     tags: ["Brand", "Collab"],
     status: "New",
@@ -213,7 +234,8 @@ export const INITIAL_COLLAB_MESSAGES: CollabMessage[] = [
     id: "col2",
     sender: "Marcus Webb",
     company: "Anchor Coffee Co.",
-    content: "We're launching a new single-origin line and your audience seems like a perfect fit. Looking for a 3-month sponsorship starting Q2. Open to 30-60 second reads or dedicated segments.",
+    content:
+      "We're launching a new single-origin line and your audience seems like a perfect fit. Looking for a 3-month sponsorship starting Q2. Open to 30-60 second reads or dedicated segments.",
     timestamp: "3h ago",
     tags: ["Sponsor"],
     status: "Interested",
@@ -223,7 +245,8 @@ export const INITIAL_COLLAB_MESSAGES: CollabMessage[] = [
     id: "col3",
     sender: "Yuki Tanaka",
     company: "CreatorWeekly",
-    content: "I'm a journalist at CreatorWeekly doing a feature on independent creators building sustainable businesses. Would love a 20-minute interview — no editing, final approval on quotes.",
+    content:
+      "I'm a journalist at CreatorWeekly doing a feature on independent creators building sustainable businesses. Would love a 20-minute interview — no editing, final approval on quotes.",
     timestamp: "5h ago",
     tags: ["Press"],
     status: "Replied",
@@ -233,7 +256,8 @@ export const INITIAL_COLLAB_MESSAGES: CollabMessage[] = [
     id: "col4",
     sender: "Dev Patel",
     company: "PodFest Conference",
-    content: "We'd love to have you as a keynote speaker at PodFest 2025 in Chicago. The conference runs March 14-16. Honorarium, travel, and hotel covered. Audience of ~800 creators.",
+    content:
+      "We'd love to have you as a keynote speaker at PodFest 2025 in Chicago. The conference runs March 14-16. Honorarium, travel, and hotel covered. Audience of ~800 creators.",
     timestamp: "1d ago",
     tags: ["Guest", "Collab"],
     status: "Interested",
@@ -243,7 +267,8 @@ export const INITIAL_COLLAB_MESSAGES: CollabMessage[] = [
     id: "col5",
     sender: "Alexa Moreno",
     company: "Skillshare",
-    content: "We're looking for creators to develop original classes on Skillshare. Based on your content, a class on your creative process could perform really well. Advance + royalties offered.",
+    content:
+      "We're looking for creators to develop original classes on Skillshare. Based on your content, a class on your creative process could perform really well. Advance + royalties offered.",
     timestamp: "2d ago",
     tags: ["Brand", "Collab"],
     status: "New",
@@ -253,7 +278,8 @@ export const INITIAL_COLLAB_MESSAGES: CollabMessage[] = [
     id: "col6",
     sender: "Tom Briggs",
     company: "Notion",
-    content: "Hey! Notion creator partnerships team here. We've been admiring your workflow content. Interested in an ambassador partnership? Custom link + commission on signups.",
+    content:
+      "Hey! Notion creator partnerships team here. We've been admiring your workflow content. Interested in an ambassador partnership? Custom link + commission on signups.",
     timestamp: "2d ago",
     tags: ["Sponsor"],
     status: "Archived",
@@ -263,7 +289,8 @@ export const INITIAL_COLLAB_MESSAGES: CollabMessage[] = [
     id: "col7",
     sender: "Cleo Banks",
     company: "Self",
-    content: "Hey, I'm a creator at 280k subs and I think our audiences would love a collab. I do similar content in the wellness space. Let me know if you're open to exploring something!",
+    content:
+      "Hey, I'm a creator at 280k subs and I think our audiences would love a collab. I do similar content in the wellness space. Let me know if you're open to exploring something!",
     timestamp: "3d ago",
     tags: ["Guest", "Collab"],
     status: "New",
@@ -273,7 +300,8 @@ export const INITIAL_COLLAB_MESSAGES: CollabMessage[] = [
     id: "col8",
     sender: "Raj Gupta",
     company: "StreamKit Pro",
-    content: "StreamKit Pro is a streaming toolkit for creators — we'd love to offer you early access and a commission deal if you'd consider featuring it. No script, just organic content.",
+    content:
+      "StreamKit Pro is a streaming toolkit for creators — we'd love to offer you early access and a commission deal if you'd consider featuring it. No script, just organic content.",
     timestamp: "4d ago",
     tags: ["Sponsor"],
     status: "New",
@@ -282,11 +310,76 @@ export const INITIAL_COLLAB_MESSAGES: CollabMessage[] = [
 ];
 
 export const INITIAL_VIP_CONTACTS: VIPContact[] = [
-  { id: "vip1", name: "Rachel Writes", handle: "@rachelwrites_", since: "Jan 2024", messages: 47 },
-  { id: "vip2", name: "Sophie From Seattle", handle: "@sophfromseattle", since: "Mar 2024", messages: 31 },
-  { id: "vip3", name: "Victor VIP", handle: "@victor.vip", since: "Nov 2023", messages: 89 },
-  { id: "vip4", name: "Moonlight Mira", handle: "@mira.moonlight", since: "May 2024", messages: 22 },
-  { id: "vip5", name: "Jordan P", handle: "@jordanp_v", since: "Jul 2024", messages: 15 },
+  {
+    id: "vip1",
+    name: "Rachel Writes",
+    handle: "@rachelwrites_",
+    since: "Jan 2024",
+    messages: 47,
+    phone: "+1 (555) 010-0001",
+    accessLevel: "Inner Circle",
+    notes: "Always leaves the most thoughtful messages. Potential community moderator — check in about this next month.",
+    tags: ["superfan", "mod-candidate", "top-caller"],
+    firstSeen: "Jan 2024",
+    lastMessage: "2m ago",
+    source: "FanMail",
+  },
+  {
+    id: "vip2",
+    name: "Sophie From Seattle",
+    handle: "@sophfromseattle",
+    since: "Mar 2024",
+    messages: 31,
+    phone: "+1 (555) 010-0002",
+    accessLevel: "VIP",
+    notes: "Drove 4 hours to the Portland show. Huge in-person supporter. Would love at merch collab idea.",
+    tags: ["superfan", "event-goer", "merch-buyer"],
+    firstSeen: "Mar 2024",
+    lastMessage: "4h ago",
+    source: "FanMail",
+  },
+  {
+    id: "vip3",
+    name: "Victor VIP",
+    handle: "@victor.vip",
+    since: "Nov 2023",
+    messages: 89,
+    phone: "+1 (555) 010-0003",
+    accessLevel: "Inner Circle",
+    notes: "OG since almost the beginning. Always encouraging. Great for community energy.",
+    tags: ["superfan", "early-supporter", "top-caller"],
+    firstSeen: "Nov 2023",
+    lastMessage: "1d ago",
+    source: "FanMail",
+  },
+  {
+    id: "vip4",
+    name: "Moonlight Mira",
+    handle: "@mira.moonlight",
+    since: "May 2024",
+    messages: 22,
+    phone: "+1 (555) 010-0004",
+    accessLevel: "VIP",
+    notes: "Great energy on every message. Might be a good fit for a community spotlight.",
+    tags: ["superfan", "content-idea"],
+    firstSeen: "May 2024",
+    lastMessage: "22m ago",
+    source: "FanMail",
+  },
+  {
+    id: "vip5",
+    name: "Jordan P",
+    handle: "@jordanp_v",
+    since: "Jul 2024",
+    messages: 15,
+    phone: "+1 (555) 010-0005",
+    accessLevel: "VIP",
+    notes: "",
+    tags: ["potential-collab"],
+    firstSeen: "Jul 2024",
+    lastMessage: "2h ago",
+    source: "FanMail",
+  },
 ];
 
 export const INITIAL_LIVE_QUEUE: LiveQueueItem[] = [
@@ -347,5 +440,11 @@ export const INITIAL_LIVE_QUEUE: LiveQueueItem[] = [
 ];
 
 export const INITIAL_BLOCKED: BlockedContact[] = [
-  { id: "bl1", name: "TruthSeeker2049", handle: "@truth2049x", reason: "Repeated harassment", blockedAt: "3 days ago" },
+  {
+    id: "bl1",
+    name: "TruthSeeker2049",
+    handle: "@truth2049x",
+    reason: "Repeated harassment",
+    blockedAt: "3 days ago",
+  },
 ];

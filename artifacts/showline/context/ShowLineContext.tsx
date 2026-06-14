@@ -24,8 +24,7 @@ const DEFAULT_STATUSES: LineStatuses = {
 const DEFAULT_AUTO_REPLIES: AutoReplies = {
   fanmail:
     "Thanks for reaching out! I read every message and I'll get back to you when I can. Stay awesome 🎙️",
-  livelineOpen:
-    "Thanks for joining the live! I'm taking questions now — keep them coming.",
+  livelineOpen: "Thanks for joining the live! I'm taking questions now — keep them coming.",
   livelineClosed:
     "The live line is currently closed. Drop your message and I'll see it before the next show!",
   backstage:
@@ -51,6 +50,8 @@ interface ShowLineContextType extends ShowLineState {
   updateAutoReply: (key: keyof AutoReplies, text: string) => void;
   addVIP: (contact: VIPContact) => void;
   removeVIP: (id: string) => void;
+  updateVIPContact: (id: string, patch: Partial<VIPContact>) => void;
+  resetVIPProfiles: () => void;
   addBlocked: (contact: BlockedContact) => void;
   removeBlocked: (id: string) => void;
   clearBlockedContacts: () => void;
@@ -101,33 +102,35 @@ export function ShowLineProvider({ children }: { children: React.ReactNode }) {
     [persist]
   );
 
-  const updateLineStatus = useCallback(
-    (line: keyof LineStatuses, status: LineStatus) => {
-      setState((prev) => {
-        const updated = { ...prev, lineStatuses: { ...prev.lineStatuses, [line]: status } };
-        const { isLoaded: _l, ...toSave } = updated;
-        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
-        return updated;
-      });
-    },
-    []
-  );
+  const updateLineStatus = useCallback((line: keyof LineStatuses, status: LineStatus) => {
+    setState((prev) => {
+      const updated = { ...prev, lineStatuses: { ...prev.lineStatuses, [line]: status } };
+      const { isLoaded: _l, ...toSave } = updated;
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
+      return updated;
+    });
+  }, []);
 
-  const updateAutoReply = useCallback(
-    (key: keyof AutoReplies, text: string) => {
-      setState((prev) => {
-        const updated = { ...prev, autoReplies: { ...prev.autoReplies, [key]: text } };
-        const { isLoaded: _l, ...toSave } = updated;
-        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
-        return updated;
-      });
-    },
-    []
-  );
+  const updateAutoReply = useCallback((key: keyof AutoReplies, text: string) => {
+    setState((prev) => {
+      const updated = { ...prev, autoReplies: { ...prev.autoReplies, [key]: text } };
+      const { isLoaded: _l, ...toSave } = updated;
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
+      return updated;
+    });
+  }, []);
 
   const addVIP = useCallback((contact: VIPContact) => {
     setState((prev) => {
-      const updated = { ...prev, vipContacts: [...prev.vipContacts, contact] };
+      if (prev.vipContacts.some((v) => v.id === contact.id)) return prev;
+      const withDefaults: VIPContact = {
+        accessLevel: "VIP",
+        tags: [],
+        source: "FanMail",
+        firstSeen: contact.since,
+        ...contact,
+      };
+      const updated = { ...prev, vipContacts: [...prev.vipContacts, withDefaults] };
       const { isLoaded: _l, ...toSave } = updated;
       AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
       return updated;
@@ -137,6 +140,27 @@ export function ShowLineProvider({ children }: { children: React.ReactNode }) {
   const removeVIP = useCallback((id: string) => {
     setState((prev) => {
       const updated = { ...prev, vipContacts: prev.vipContacts.filter((v) => v.id !== id) };
+      const { isLoaded: _l, ...toSave } = updated;
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
+      return updated;
+    });
+  }, []);
+
+  const updateVIPContact = useCallback((id: string, patch: Partial<VIPContact>) => {
+    setState((prev) => {
+      const updated = {
+        ...prev,
+        vipContacts: prev.vipContacts.map((v) => (v.id === id ? { ...v, ...patch } : v)),
+      };
+      const { isLoaded: _l, ...toSave } = updated;
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
+      return updated;
+    });
+  }, []);
+
+  const resetVIPProfiles = useCallback(() => {
+    setState((prev) => {
+      const updated = { ...prev, vipContacts: INITIAL_VIP_CONTACTS };
       const { isLoaded: _l, ...toSave } = updated;
       AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
       return updated;
@@ -182,6 +206,8 @@ export function ShowLineProvider({ children }: { children: React.ReactNode }) {
         updateAutoReply,
         addVIP,
         removeVIP,
+        updateVIPContact,
+        resetVIPProfiles,
         addBlocked,
         removeBlocked,
         clearBlockedContacts,

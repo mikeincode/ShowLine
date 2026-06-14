@@ -37,6 +37,14 @@ const MODAL_HEADER = (title: string) => ({
   headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#F0F0FF" },
 });
 
+const CARD_HEADER = (title: string) => ({
+  presentation: "card" as const,
+  headerTitle: title,
+  headerStyle: { backgroundColor: "#0D0D14" },
+  headerTintColor: "#F0F0FF",
+  headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#F0F0FF" },
+});
+
 function RootLayoutNav() {
   const { isLoaded, onboardingCompleted } = useShowLine();
   const router = useRouter();
@@ -59,22 +67,9 @@ function RootLayoutNav() {
         <Stack.Screen name="autoreply" options={MODAL_HEADER("Auto-Reply Settings")} />
         <Stack.Screen name="upgrade" options={MODAL_HEADER("Upgrade")} />
         <Stack.Screen name="safety" options={MODAL_HEADER("Safety Controls")} />
-        <Stack.Screen
-          name="sessions"
-          options={{
-            ...MODAL_HEADER("Post-Show Recaps"),
-            presentation: "card",
-            headerStyle: { backgroundColor: "#0D0D14" },
-          }}
-        />
-        <Stack.Screen
-          name="session/[id]"
-          options={{
-            ...MODAL_HEADER("Session Recap"),
-            presentation: "card",
-            headerStyle: { backgroundColor: "#0D0D14" },
-          }}
-        />
+        <Stack.Screen name="sessions" options={CARD_HEADER("Post-Show Recaps")} />
+        <Stack.Screen name="session/[id]" options={CARD_HEADER("Session Recap")} />
+        <Stack.Screen name="vip/[id]" options={CARD_HEADER("Fan Profile")} />
       </Stack>
       <SimulationEngine />
       <BannerHost />

@@ -38,6 +38,15 @@ export type CollabStatus = "New" | "Interested" | "Replied" | "Archived";
 
 export type BackstageMode = "Closed" | "VIP Only" | "Quiet Hours";
 
+export type VIPAccessLevel =
+  | "Standard Fan"
+  | "VIP"
+  | "Inner Circle"
+  | "Muted"
+  | "Blocked";
+
+export type VIPSource = "FanMail" | "LiveLine" | "Backstage" | "Manual";
+
 export interface FanMessage {
   id: string;
   sender: string;
@@ -81,6 +90,14 @@ export interface VIPContact {
   handle: string;
   since: string;
   messages: number;
+  // Extended profile fields
+  phone?: string;
+  accessLevel?: VIPAccessLevel;
+  notes?: string;
+  tags?: string[];
+  firstSeen?: string;
+  lastMessage?: string;
+  source?: VIPSource;
 }
 
 export interface BlockedContact {
