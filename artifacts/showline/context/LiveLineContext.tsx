@@ -16,6 +16,8 @@ interface LiveLineState {
   sessionStart: string | null;
   liveQueue: LiveQueueItem[];
   settings: LiveSessionSettings;
+  sessionVIPAdded: number;
+  sessionBlockedCount: number;
 }
 
 interface LiveLineContextType extends LiveLineState {
@@ -26,6 +28,7 @@ interface LiveLineContextType extends LiveLineState {
   addToQueue: (id: string) => void;
   markAnswered: (id: string) => void;
   blockFromLive: (id: string) => void;
+  makeVIPFromLive: (id: string) => void;
   addLiveMessage: (msg: LiveQueueItem) => void;
 }
 
@@ -36,16 +39,24 @@ export function LiveLineProvider({ children }: { children: React.ReactNode }) {
   const [sessionStart, setSessionStart] = useState<string | null>(null);
   const [liveQueue, setLiveQueue] = useState<LiveQueueItem[]>(INITIAL_LIVE_QUEUE);
   const [settings, setSettings] = useState<LiveSessionSettings>(DEFAULT_SETTINGS);
+  const [sessionVIPAdded, setSessionVIPAdded] = useState(0);
+  const [sessionBlockedCount, setSessionBlockedCount] = useState(0);
 
   const startSession = useCallback(() => {
     setIsLive(true);
     setSessionStart(new Date().toISOString());
+    setSessionVIPAdded(0);
+    setSessionBlockedCount(0);
   }, []);
 
   const endSession = useCallback(() => {
     setIsLive(false);
     setSessionStart(null);
-    setLiveQueue(INITIAL_LIVE_QUEUE.map((m) => ({ ...m, isAnswered: false, inQueue: false, isPinned: false })));
+    setSessionVIPAdded(0);
+    setSessionBlockedCount(0);
+    setLiveQueue(
+      INITIAL_LIVE_QUEUE.map((m) => ({ ...m, isAnswered: false, inQueue: false, isPinned: false }))
+    );
   }, []);
 
   const toggleSetting = useCallback((key: keyof LiveSessionSettings) => {
@@ -68,6 +79,12 @@ export function LiveLineProvider({ children }: { children: React.ReactNode }) {
 
   const blockFromLive = useCallback((id: string) => {
     setLiveQueue((prev) => prev.filter((m) => m.id !== id));
+    setSessionBlockedCount((n) => n + 1);
+  }, []);
+
+  const makeVIPFromLive = useCallback((id: string) => {
+    setLiveQueue((prev) => prev.map((m) => (m.id === id ? { ...m, isVIP: true } : m)));
+    setSessionVIPAdded((n) => n + 1);
   }, []);
 
   const addLiveMessage = useCallback((msg: LiveQueueItem) => {
@@ -81,6 +98,8 @@ export function LiveLineProvider({ children }: { children: React.ReactNode }) {
         sessionStart,
         liveQueue,
         settings,
+        sessionVIPAdded,
+        sessionBlockedCount,
         startSession,
         endSession,
         toggleSetting,
@@ -88,6 +107,7 @@ export function LiveLineProvider({ children }: { children: React.ReactNode }) {
         addToQueue,
         markAnswered,
         blockFromLive,
+        makeVIPFromLive,
         addLiveMessage,
       }}
     >

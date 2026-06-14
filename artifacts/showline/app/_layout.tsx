@@ -21,12 +21,21 @@ import { SimulationEngine } from "@/components/SimulationEngine";
 import { BannerProvider } from "@/context/BannerContext";
 import { LiveLineProvider } from "@/context/LiveLineContext";
 import { MessagesProvider } from "@/context/MessagesContext";
+import { SessionHistoryProvider } from "@/context/SessionHistoryContext";
 import { ShowLineProvider, useShowLine } from "@/context/ShowLineContext";
 import { SimulationProvider } from "@/context/SimulationContext";
 
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
+
+const MODAL_HEADER = (title: string) => ({
+  presentation: "modal" as const,
+  headerTitle: title,
+  headerStyle: { backgroundColor: "#0D0D14" },
+  headerTintColor: "#F0F0FF",
+  headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#F0F0FF" },
+});
 
 function RootLayoutNav() {
   const { isLoaded, onboardingCompleted } = useShowLine();
@@ -45,54 +54,25 @@ function RootLayoutNav() {
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+        <Stack.Screen name="backstage" options={MODAL_HEADER("Backstage Line")} />
+        <Stack.Screen name="collab" options={MODAL_HEADER("Collab Line")} />
+        <Stack.Screen name="autoreply" options={MODAL_HEADER("Auto-Reply Settings")} />
+        <Stack.Screen name="upgrade" options={MODAL_HEADER("Upgrade")} />
+        <Stack.Screen name="safety" options={MODAL_HEADER("Safety Controls")} />
         <Stack.Screen
-          name="backstage"
+          name="sessions"
           options={{
-            presentation: "modal",
-            headerTitle: "Backstage Line",
+            ...MODAL_HEADER("Post-Show Recaps"),
+            presentation: "card",
             headerStyle: { backgroundColor: "#0D0D14" },
-            headerTintColor: "#F0F0FF",
-            headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#F0F0FF" },
           }}
         />
         <Stack.Screen
-          name="collab"
+          name="session/[id]"
           options={{
-            presentation: "modal",
-            headerTitle: "Collab Line",
+            ...MODAL_HEADER("Session Recap"),
+            presentation: "card",
             headerStyle: { backgroundColor: "#0D0D14" },
-            headerTintColor: "#F0F0FF",
-            headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#F0F0FF" },
-          }}
-        />
-        <Stack.Screen
-          name="autoreply"
-          options={{
-            presentation: "modal",
-            headerTitle: "Auto-Reply Settings",
-            headerStyle: { backgroundColor: "#0D0D14" },
-            headerTintColor: "#F0F0FF",
-            headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#F0F0FF" },
-          }}
-        />
-        <Stack.Screen
-          name="upgrade"
-          options={{
-            presentation: "modal",
-            headerTitle: "Upgrade",
-            headerStyle: { backgroundColor: "#0D0D14" },
-            headerTintColor: "#F0F0FF",
-            headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#F0F0FF" },
-          }}
-        />
-        <Stack.Screen
-          name="safety"
-          options={{
-            presentation: "modal",
-            headerTitle: "Safety Controls",
-            headerStyle: { backgroundColor: "#0D0D14" },
-            headerTintColor: "#F0F0FF",
-            headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#F0F0FF" },
           }}
         />
       </Stack>
@@ -129,7 +109,9 @@ export default function RootLayout() {
                   <LiveLineProvider>
                     <SimulationProvider>
                       <BannerProvider>
-                        <RootLayoutNav />
+                        <SessionHistoryProvider>
+                          <RootLayoutNav />
+                        </SessionHistoryProvider>
                       </BannerProvider>
                     </SimulationProvider>
                   </LiveLineProvider>

@@ -72,6 +72,7 @@ export interface LiveQueueItem {
   isPinned: boolean;
   inQueue: boolean;
   isAnswered: boolean;
+  isVIP?: boolean;
 }
 
 export interface VIPContact {
@@ -111,4 +112,19 @@ export interface LiveSessionSettings {
   slowMode: boolean;
   autoReply: boolean;
   showQRCode: boolean;
+}
+
+export interface SessionRecap {
+  id: string;
+  startTime: string;
+  endTime: string;
+  durationMs: number;
+  totalMessages: number;
+  messagesPinned: number;
+  messagesAnswered: number;
+  fansVIPAdded: number;
+  contactsBlocked: number;
+  topTopics: string[];
+  pinnedMessages: LiveQueueItem[];
+  answeredMessages: LiveQueueItem[];
 }

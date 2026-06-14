@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusPill } from "@/components/StatusPill";
 import { useBanner } from "@/context/BannerContext";
 import { useMessages } from "@/context/MessagesContext";
+import { useSessionHistory } from "@/context/SessionHistoryContext";
 import { useShowLine } from "@/context/ShowLineContext";
 import { type SimFrequency, useSimulation } from "@/context/SimulationContext";
 import { useColors } from "@/hooks/useColors";
@@ -63,6 +64,7 @@ export default function MoreScreen() {
   const { lineStatuses, creatorType, clearBlockedContacts } = useShowLine();
   const { resetMessages, unblockAll } = useMessages();
   const { enabled, frequency, setEnabled, setFrequency } = useSimulation();
+  const { sessions, clearHistory } = useSessionHistory();
   const { showBanner } = useBanner();
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
@@ -87,18 +89,19 @@ export default function MoreScreen() {
   const handleResetData = () => {
     Alert.alert(
       "Reset Mock Data",
-      "This will restore all fan messages and collab inquiries to their initial demo state. Onboarding and settings are kept.",
+      "This restores all fan messages and collab inquiries to demo state, and clears session history. Onboarding and settings are kept.",
       [
         { text: "Cancel", style: "cancel" },
         {
-          text: "Reset",
+          text: "Reset Everything",
           style: "destructive",
           onPress: () => {
             resetMessages();
+            clearHistory();
             showBanner({
               icon: "refresh-cw",
               title: "Mock Data Reset",
-              message: "All messages restored to initial demo state",
+              message: "Messages and session history restored to demo state",
               color: "#10B981",
             });
           },
@@ -202,6 +205,17 @@ export default function MoreScreen() {
         onPress={() => router.push("/collab")}
       />
       <MenuItem
+        icon="film"
+        label="Post-Show Recaps"
+        desc={
+          sessions.length > 0
+            ? `${sessions.length} session${sessions.length !== 1 ? "s" : ""} saved`
+            : "No sessions yet"
+        }
+        accentColor="#8B5CF6"
+        onPress={() => router.push("/sessions")}
+      />
+      <MenuItem
         icon="zap"
         label="Auto-Reply Settings"
         desc="Manage auto-reply templates"
@@ -236,8 +250,15 @@ export default function MoreScreen() {
         <View style={styles.demoToggleRow}>
           <View style={styles.demoToggleText}>
             <View style={styles.demoTitleRow}>
-              <View style={[styles.demoDot, { backgroundColor: enabled ? "#10B981" : colors.border }]} />
-              <Text style={[styles.demoTitle, { color: colors.foreground }]}>Simulate Messages</Text>
+              <View
+                style={[
+                  styles.demoDot,
+                  { backgroundColor: enabled ? "#10B981" : colors.border },
+                ]}
+              />
+              <Text style={[styles.demoTitle, { color: colors.foreground }]}>
+                Simulate Messages
+              </Text>
             </View>
             <Text style={[styles.demoDesc, { color: colors.mutedForeground }]}>
               Auto-generates fan messages for testing
@@ -250,7 +271,9 @@ export default function MoreScreen() {
               showBanner({
                 icon: "zap",
                 title: v ? "Simulation Enabled" : "Simulation Disabled",
-                message: v ? "New fan messages will arrive periodically" : "Message simulation paused",
+                message: v
+                  ? "New fan messages will arrive periodically"
+                  : "Message simulation paused",
                 color: "#8B5CF6",
               });
             }}
@@ -259,7 +282,7 @@ export default function MoreScreen() {
           />
         </View>
 
-        {/* Frequency selector — only shown when enabled */}
+        {/* Frequency selector */}
         {enabled && (
           <>
             <View style={[styles.demoDivider, { backgroundColor: colors.border }]} />
@@ -293,7 +316,9 @@ export default function MoreScreen() {
                       <Text
                         style={[
                           styles.freqBtnSub,
-                          { color: active ? "rgba(255,255,255,0.7)" : colors.border },
+                          {
+                            color: active ? "rgba(255,255,255,0.7)" : colors.border,
+                          },
                         ]}
                       >
                         {f.sublabel}
@@ -321,7 +346,7 @@ export default function MoreScreen() {
               Reset Mock Data
             </Text>
             <Text style={[styles.demoActionDesc, { color: colors.mutedForeground }]}>
-              Restore all messages to demo state
+              Restore messages + clear session history
             </Text>
           </View>
         </Pressable>
@@ -444,11 +469,7 @@ const styles = StyleSheet.create({
   },
   freqBtnText: { fontSize: 13, fontFamily: "Inter_600SemiBold" },
   freqBtnSub: { fontSize: 10, fontFamily: "Inter_400Regular" },
-  demoAction: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 12,
-  },
+  demoAction: { flexDirection: "row", alignItems: "center", gap: 12 },
   demoActionIcon: {
     width: 38,
     height: 38,

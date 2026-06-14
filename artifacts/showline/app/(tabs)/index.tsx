@@ -16,8 +16,10 @@ import { LineCard } from "@/components/LineCard";
 import { useBanner } from "@/context/BannerContext";
 import { useLiveLine } from "@/context/LiveLineContext";
 import { useMessages } from "@/context/MessagesContext";
+import { useSessionHistory } from "@/context/SessionHistoryContext";
 import { useShowLine } from "@/context/ShowLineContext";
 import { useColors } from "@/hooks/useColors";
+import { formatDuration, formatSessionDate } from "../sessions";
 
 export default function DashboardScreen() {
   const colors = useColors();
@@ -27,6 +29,7 @@ export default function DashboardScreen() {
   const { isLive, startSession } = useLiveLine();
   const { fanMailMessages, collabMessages } = useMessages();
   const { showBanner } = useBanner();
+  const { sessions } = useSessionHistory();
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 84 : 0;
@@ -34,6 +37,8 @@ export default function DashboardScreen() {
   const fanMailUnread = fanMailMessages.filter((m) => !m.isBlocked && !m.reply).length;
   const collabUnread = collabMessages.filter((m) => m.status === "New").length;
   const vipUnread = fanMailMessages.filter((m) => m.isVIP && !m.reply).length;
+
+  const lastSession = sessions[0] ?? null;
 
   const toggleFanMail = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -106,6 +111,59 @@ export default function DashboardScreen() {
           </Text>
         </View>
       </View>
+
+      {/* Last Live Recap card — only shown if a session exists */}
+      {lastSession && (
+        <Pressable
+          onPress={() => router.push(`/session/${lastSession.id}`)}
+          style={({ pressed }) => [
+            styles.recapCard,
+            {
+              backgroundColor: colors.card,
+              borderColor: colors.primary + "33",
+              opacity: pressed ? 0.88 : 1,
+            },
+          ]}
+        >
+          <View style={[styles.recapLeft, { backgroundColor: colors.primary + "22" }]}>
+            <Feather name="film" size={18} color={colors.primary} />
+          </View>
+          <View style={styles.recapInfo}>
+            <Text style={[styles.recapTitle, { color: colors.foreground }]}>
+              Last Live Recap
+            </Text>
+            <Text style={[styles.recapMeta, { color: colors.mutedForeground }]}>
+              {formatSessionDate(lastSession.startTime)} ·{" "}
+              {formatDuration(lastSession.durationMs)} ·{" "}
+              {lastSession.totalMessages} messages
+            </Text>
+            <View style={styles.recapPills}>
+              {lastSession.messagesPinned > 0 && (
+                <View style={[styles.recapPill, { backgroundColor: colors.primary + "22" }]}>
+                  <Text style={[styles.recapPillText, { color: colors.primary }]}>
+                    {lastSession.messagesPinned} pinned
+                  </Text>
+                </View>
+              )}
+              {lastSession.messagesAnswered > 0 && (
+                <View style={[styles.recapPill, { backgroundColor: "#10B98122" }]}>
+                  <Text style={[styles.recapPillText, { color: "#10B981" }]}>
+                    {lastSession.messagesAnswered} answered
+                  </Text>
+                </View>
+              )}
+              {lastSession.fansVIPAdded > 0 && (
+                <View style={[styles.recapPill, { backgroundColor: "#F59E0B22" }]}>
+                  <Text style={[styles.recapPillText, { color: "#F59E0B" }]}>
+                    {lastSession.fansVIPAdded} VIP
+                  </Text>
+                </View>
+              )}
+            </View>
+          </View>
+          <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
+        </Pressable>
+      )}
 
       {/* Section title */}
       <Text style={[styles.sectionTitle, { color: colors.mutedForeground }]}>YOUR LINES</Text>
@@ -227,7 +285,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: 16,
     borderRadius: 16,
-    marginBottom: 24,
+    marginBottom: 8,
   },
   numberLeft: { flexDirection: "row", alignItems: "center", gap: 12 },
   numberIcon: {
@@ -241,10 +299,33 @@ const styles = StyleSheet.create({
   number: { fontSize: 18, fontFamily: "Inter_700Bold", letterSpacing: 0.5 },
   comingSoonBadge: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: 8 },
   comingSoonText: { fontSize: 11, fontFamily: "Inter_500Medium" },
+  recapCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 12,
+    padding: 14,
+    borderRadius: 14,
+    borderWidth: 1,
+    marginBottom: 4,
+  },
+  recapLeft: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  recapInfo: { flex: 1, gap: 4 },
+  recapTitle: { fontSize: 14, fontFamily: "Inter_600SemiBold" },
+  recapMeta: { fontSize: 12, fontFamily: "Inter_400Regular" },
+  recapPills: { flexDirection: "row", gap: 6, flexWrap: "wrap" },
+  recapPill: { paddingHorizontal: 7, paddingVertical: 2, borderRadius: 5 },
+  recapPillText: { fontSize: 11, fontFamily: "Inter_600SemiBold" },
   sectionTitle: {
     fontSize: 11,
     fontFamily: "Inter_600SemiBold",
     letterSpacing: 1.5,
     marginBottom: 8,
+    marginTop: 8,
   },
 });
