@@ -67,7 +67,7 @@ export default function OnboardingScreen() {
     if (!creatorType) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     await completeOnboarding(creatorType, useCases);
-    router.replace("/(tabs)/");
+    router.replace("/");
   };
 
   return (

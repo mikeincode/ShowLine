@@ -30,9 +30,12 @@ export function MessageCard({
 }: MessageCardProps) {
   const colors = useColors();
   const { showBanner } = useBanner();
-  const [expanded, setExpanded] = useState(false);
+  const [expanded, setExpanded]   = useState(false);
   const [replyText, setReplyText] = useState("");
   const [showReply, setShowReply] = useState(false);
+
+  const isUnread   = !message.reply && !message.isBlocked;
+  const needsReply = message.tags.includes("Needs Reply") && !message.reply;
 
   const handleBlock = () => {
     Alert.alert(
@@ -80,6 +83,10 @@ export function MessageCard({
     setShowReply(false);
   };
 
+  // Card accent: VIP gets gold border; Needs Reply gets amber left accent
+  const cardBorderColor = message.isVIP ? "#F59E0B44" : needsReply ? "#F59E0B33" : colors.border;
+  const cardBorderWidth = message.isVIP || needsReply ? 1 : 0;
+
   return (
     <Pressable
       onPress={() => setExpanded((v) => !v)}
@@ -87,18 +94,38 @@ export function MessageCard({
         styles.card,
         {
           backgroundColor: message.isPinned ? colors.muted : colors.card,
-          borderColor: message.isVIP ? "#F59E0B44" : colors.border,
-          borderWidth: message.isVIP ? 1 : 0,
+          borderColor: cardBorderColor,
+          borderWidth: cardBorderWidth,
         },
       ]}
     >
-      {message.isPinned && (
-        <View style={styles.pinnedBar}>
-          <Feather name="bookmark" size={10} color={colors.primary} />
-          <Text style={[styles.pinnedText, { color: colors.primary }]}>Pinned</Text>
+      {/* Left accent bar for "Needs Reply" urgency */}
+      {needsReply && (
+        <View style={[styles.urgentBar, { backgroundColor: "#F59E0B" }]} />
+      )}
+
+      {/* ── Status bar (pinned / saved / unread) ──────────── */}
+      {(message.isPinned || message.isSaved || isUnread) && (
+        <View style={styles.statusBar}>
+          {message.isPinned && (
+            <View style={styles.statusPill}>
+              <Feather name="bookmark" size={10} color={colors.primary} />
+              <Text style={[styles.statusText, { color: colors.primary }]}>Pinned</Text>
+            </View>
+          )}
+          {message.isSaved && (
+            <View style={styles.statusPill}>
+              <Feather name="star" size={10} color="#F59E0B" />
+              <Text style={[styles.statusText, { color: "#F59E0B" }]}>Saved</Text>
+            </View>
+          )}
+          {isUnread && (
+            <View style={[styles.unreadDot, { backgroundColor: colors.primary }]} />
+          )}
         </View>
       )}
 
+      {/* ── Header: avatar + meta + timestamp ─────────────── */}
       <View style={styles.header}>
         <View style={[styles.avatar, { backgroundColor: colors.secondary }]}>
           <Text style={[styles.avatarText, { color: colors.primary }]}>
@@ -110,15 +137,25 @@ export function MessageCard({
             </View>
           )}
         </View>
+
         <View style={styles.meta}>
-          <Text style={[styles.sender, { color: colors.foreground }]}>{message.sender}</Text>
+          <View style={styles.nameRow}>
+            <Text style={[styles.sender, { color: colors.foreground }]}>{message.sender}</Text>
+            {message.isVIP && (
+              <View style={[styles.vipBadge, { backgroundColor: "#F59E0B22" }]}>
+                <Text style={styles.vipBadgeText}>VIP Fan</Text>
+              </View>
+            )}
+          </View>
           {message.handle && (
             <Text style={[styles.handle, { color: colors.mutedForeground }]}>{message.handle}</Text>
           )}
         </View>
+
         <Text style={[styles.time, { color: colors.mutedForeground }]}>{message.timestamp}</Text>
       </View>
 
+      {/* ── Message content ───────────────────────────────── */}
       <Text
         style={[styles.content, { color: colors.foreground }]}
         numberOfLines={expanded ? undefined : 2}
@@ -126,6 +163,7 @@ export function MessageCard({
         {message.content}
       </Text>
 
+      {/* ── Reply preview ─────────────────────────────────── */}
       {message.reply && (
         <View style={[styles.replyPreview, { backgroundColor: colors.muted }]}>
           <Feather name="corner-down-right" size={12} color={colors.primary} />
@@ -135,14 +173,18 @@ export function MessageCard({
         </View>
       )}
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tags}>
-        <View style={styles.tagsInner}>
-          {message.tags.map((tag) => (
-            <TagBadge key={tag} tag={tag} />
-          ))}
-        </View>
-      </ScrollView>
+      {/* ── Tags ──────────────────────────────────────────── */}
+      {message.tags.length > 0 && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tags}>
+          <View style={styles.tagsInner}>
+            {message.tags.map((tag) => (
+              <TagBadge key={tag} tag={tag} />
+            ))}
+          </View>
+        </ScrollView>
+      )}
 
+      {/* ── Actions (expanded) ────────────────────────────── */}
       {expanded && (
         <View style={[styles.actions, { borderTopColor: colors.border }]}>
           <Pressable onPress={onPin} style={styles.action}>
@@ -151,52 +193,44 @@ export function MessageCard({
               size={16}
               color={message.isPinned ? colors.primary : colors.mutedForeground}
             />
-            <Text
-              style={[
-                styles.actionText,
-                { color: message.isPinned ? colors.primary : colors.mutedForeground },
-              ]}
-            >
+            <Text style={[styles.actionText, { color: message.isPinned ? colors.primary : colors.mutedForeground }]}>
               {message.isPinned ? "Unpin" : "Pin"}
             </Text>
           </Pressable>
+
           <Pressable onPress={onSave} style={styles.action}>
-            <Feather
-              name="star"
-              size={16}
-              color={message.isSaved ? "#F59E0B" : colors.mutedForeground}
-            />
-            <Text
-              style={[
-                styles.actionText,
-                { color: message.isSaved ? "#F59E0B" : colors.mutedForeground },
-              ]}
-            >
+            <Feather name="star" size={16} color={message.isSaved ? "#F59E0B" : colors.mutedForeground} />
+            <Text style={[styles.actionText, { color: message.isSaved ? "#F59E0B" : colors.mutedForeground }]}>
               {message.isSaved ? "Saved" : "Save"}
             </Text>
           </Pressable>
+
           {!message.isVIP && (
             <Pressable onPress={handleMakeVIP} style={styles.action}>
               <Feather name="award" size={16} color={colors.mutedForeground} />
               <Text style={[styles.actionText, { color: colors.mutedForeground }]}>VIP</Text>
             </Pressable>
           )}
+
           <Pressable onPress={() => setShowReply((v) => !v)} style={styles.action}>
             <Feather name="send" size={16} color={colors.mutedForeground} />
             <Text style={[styles.actionText, { color: colors.mutedForeground }]}>Reply</Text>
           </Pressable>
+
           {onMoveToLiveLine && (
             <Pressable onPress={onMoveToLiveLine} style={styles.action}>
               <Feather name="radio" size={16} color={colors.mutedForeground} />
               <Text style={[styles.actionText, { color: colors.mutedForeground }]}>Live</Text>
             </Pressable>
           )}
+
           {onMoveToCollab && (
             <Pressable onPress={onMoveToCollab} style={styles.action}>
               <Feather name="briefcase" size={16} color={colors.mutedForeground} />
               <Text style={[styles.actionText, { color: colors.mutedForeground }]}>Collab</Text>
             </Pressable>
           )}
+
           <Pressable onPress={handleBlock} style={styles.action}>
             <Feather name="slash" size={16} color={colors.destructive} />
             <Text style={[styles.actionText, { color: colors.destructive }]}>Block</Text>
@@ -204,6 +238,7 @@ export function MessageCard({
         </View>
       )}
 
+      {/* ── Reply box (expanded + showReply) ──────────────── */}
       {expanded && showReply && (
         <View style={[styles.replyBox, { backgroundColor: colors.muted }]}>
           <TextInput
@@ -233,15 +268,36 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
     gap: 10,
+    overflow: "hidden",
   },
-  pinnedBar: {
+  urgentBar: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 3,
+    borderTopLeftRadius: 14,
+    borderBottomLeftRadius: 14,
+  },
+  statusBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  statusPill: {
     flexDirection: "row",
     alignItems: "center",
     gap: 4,
   },
-  pinnedText: {
+  statusText: {
     fontSize: 11,
     fontFamily: "Inter_600SemiBold",
+  },
+  unreadDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    marginLeft: "auto",
   },
   header: {
     flexDirection: "row",
@@ -276,11 +332,28 @@ const styles = StyleSheet.create({
   },
   meta: {
     flex: 1,
-    gap: 1,
+    gap: 2,
+  },
+  nameRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flexWrap: "wrap",
   },
   sender: {
     fontSize: 14,
     fontFamily: "Inter_600SemiBold",
+  },
+  vipBadge: {
+    paddingHorizontal: 6,
+    paddingVertical: 1,
+    borderRadius: 5,
+  },
+  vipBadgeText: {
+    fontSize: 10,
+    fontFamily: "Inter_700Bold",
+    color: "#F59E0B",
+    letterSpacing: 0.2,
   },
   handle: {
     fontSize: 12,

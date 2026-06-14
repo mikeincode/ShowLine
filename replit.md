@@ -58,6 +58,9 @@ _Populate as you build._
 - `"lightbulb"` is not a valid Feather icon name — use `"zap"` for the idea/content icon in session recap screen.
 - `useColors()` must access `colors.dark` / `colors.light` directly — do NOT cast `colors` as `Record<string, ColorSet>` because `colors.radius` (a `number`) is not a `ColorSet`.
 - Expo web bundles at port 19267; artifact registered with `router = "expo-domain"` to serve via the Expo dev domain proxy.
+- `router.replace("/(tabs)/")` is not valid with typed routes — use `router.replace("/")` instead (the tabs layout is mounted at root).
+- FanMail filter/sort prefs are persisted at `@showline:inbox_prefs` (separate from `@showline:messages`). Reset Mock Data only clears messages, not UI preferences — intentional.
+- "Unread" filter in FanMail uses `!message.reply` as the proxy for "unreplied/pending" — there is no `isRead` field on `FanMessage`.
 
 ## Pointers
 

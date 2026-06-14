@@ -38,6 +38,10 @@ export default function DashboardScreen() {
   const collabUnread = collabMessages.filter((m) => m.status === "New").length;
   const vipUnread = fanMailMessages.filter((m) => m.isVIP && !m.reply).length;
 
+  const inboxNeedsReply = fanMailMessages.filter((m) => !m.isBlocked && !m.reply).length;
+  const inboxPinned     = fanMailMessages.filter((m) => !m.isBlocked && m.isPinned).length;
+  const inboxVIP        = fanMailMessages.filter((m) => !m.isBlocked && m.isVIP).length;
+
   const lastSession = sessions[0] ?? null;
 
   const toggleFanMail = () => {
@@ -162,6 +166,52 @@ export default function DashboardScreen() {
             </View>
           </View>
           <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
+        </Pressable>
+      )}
+
+      {/* Smart Inbox card */}
+      {(inboxNeedsReply > 0 || inboxPinned > 0 || inboxVIP > 0) && (
+        <Pressable
+          onPress={() => router.push("/(tabs)/fanmail")}
+          style={({ pressed }) => [
+            styles.smartCard,
+            {
+              backgroundColor: colors.card,
+              borderColor: colors.primary + "33",
+              opacity: pressed ? 0.88 : 1,
+            },
+          ]}
+        >
+          <View style={styles.smartHeader}>
+            <View style={[styles.smartIcon, { backgroundColor: colors.primary + "22" }]}>
+              <Feather name="inbox" size={16} color={colors.primary} />
+            </View>
+            <Text style={[styles.smartTitle, { color: colors.foreground }]}>Smart Inbox</Text>
+            <Feather name="chevron-right" size={14} color={colors.mutedForeground} />
+          </View>
+          <View style={styles.smartStats}>
+            {inboxNeedsReply > 0 && (
+              <View style={[styles.smartStat, { backgroundColor: "#EF444414" }]}>
+                <Feather name="message-circle" size={13} color="#EF4444" />
+                <Text style={[styles.smartStatNum, { color: "#EF4444" }]}>{inboxNeedsReply}</Text>
+                <Text style={[styles.smartStatLabel, { color: colors.mutedForeground }]}>Needs Reply</Text>
+              </View>
+            )}
+            {inboxPinned > 0 && (
+              <View style={[styles.smartStat, { backgroundColor: "#10B98114" }]}>
+                <Feather name="bookmark" size={13} color="#10B981" />
+                <Text style={[styles.smartStatNum, { color: "#10B981" }]}>{inboxPinned}</Text>
+                <Text style={[styles.smartStatLabel, { color: colors.mutedForeground }]}>Pinned</Text>
+              </View>
+            )}
+            {inboxVIP > 0 && (
+              <View style={[styles.smartStat, { backgroundColor: "#F59E0B14" }]}>
+                <Feather name="award" size={13} color="#F59E0B" />
+                <Text style={[styles.smartStatNum, { color: "#F59E0B" }]}>{inboxVIP}</Text>
+                <Text style={[styles.smartStatLabel, { color: colors.mutedForeground }]}>VIP</Text>
+              </View>
+            )}
+          </View>
         </Pressable>
       )}
 
@@ -327,5 +377,50 @@ const styles = StyleSheet.create({
     letterSpacing: 1.5,
     marginBottom: 8,
     marginTop: 8,
+  },
+  smartCard: {
+    borderRadius: 14,
+    borderWidth: 1,
+    padding: 14,
+    gap: 12,
+    marginBottom: 4,
+  },
+  smartHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  smartIcon: {
+    width: 30,
+    height: 30,
+    borderRadius: 9,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  smartTitle: {
+    flex: 1,
+    fontSize: 14,
+    fontFamily: "Inter_600SemiBold",
+  },
+  smartStats: {
+    flexDirection: "row",
+    gap: 8,
+    flexWrap: "wrap",
+  },
+  smartStat: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 8,
+  },
+  smartStatNum: {
+    fontSize: 14,
+    fontFamily: "Inter_700Bold",
+  },
+  smartStatLabel: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
   },
 });
