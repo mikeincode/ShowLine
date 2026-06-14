@@ -190,7 +190,7 @@ export default function SessionDetailScreen() {
           </Text>
           <View style={[styles.topicsCard, { backgroundColor: "#8B5CF611", borderColor: "#8B5CF633" }]}>
             <View style={styles.topicsCardHeader}>
-              <Feather name="lightbulb" size={16} color="#8B5CF6" />
+              <Feather name="zap" size={16} color="#8B5CF6" />
               <Text style={[styles.topicsCardTitle, { color: "#8B5CF6" }]}>
                 Turn these into clips, posts, or next-episode topics
               </Text>

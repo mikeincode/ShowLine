@@ -1,0 +1,1 @@
+- [ShowLine TS quirks](showline-ts-quirks.md) — three typecheck fixes needed for React 19 + Feather + colors cast; zero errors after fix.

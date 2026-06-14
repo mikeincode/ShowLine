@@ -11,7 +11,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import React, { useEffect } from "react";
 import { View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { GestureHandlerRootView as _GestureHandlerRootView } from "react-native-gesture-handler";
 import { KeyboardProvider } from "react-native-keyboard-controller";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
@@ -26,6 +26,10 @@ import { ShowLineProvider, useShowLine } from "@/context/ShowLineContext";
 import { SimulationProvider } from "@/context/SimulationContext";
 
 SplashScreen.preventAutoHideAsync();
+
+const GestureHandlerRootView = _GestureHandlerRootView as React.ComponentType<
+  React.ComponentProps<typeof _GestureHandlerRootView> & { children?: React.ReactNode }
+>;
 
 const queryClient = new QueryClient();
 
