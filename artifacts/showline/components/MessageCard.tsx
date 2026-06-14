@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 
 import { TagBadge } from "@/components/TagBadge";
+import { useBanner } from "@/context/BannerContext";
 import { useColors } from "@/hooks/useColors";
 import type { FanMessage } from "@/types";
 
@@ -28,20 +29,53 @@ export function MessageCard({
   onMoveToCollab,
 }: MessageCardProps) {
   const colors = useColors();
+  const { showBanner } = useBanner();
   const [expanded, setExpanded] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [showReply, setShowReply] = useState(false);
 
   const handleBlock = () => {
-    Alert.alert("Block Sender", `Block ${message.sender}? They won't be able to message you.`, [
-      { text: "Cancel", style: "cancel" },
-      { text: "Block", style: "destructive", onPress: onBlock },
-    ]);
+    Alert.alert(
+      "Block Sender",
+      `Block ${message.sender}? They won't be able to message you.`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Block",
+          style: "destructive",
+          onPress: () => {
+            onBlock();
+            showBanner({
+              icon: "slash",
+              title: "Contact Blocked",
+              message: `${message.sender} can no longer message you`,
+              color: "#EF4444",
+            });
+          },
+        },
+      ]
+    );
+  };
+
+  const handleMakeVIP = () => {
+    onMakeVIP();
+    showBanner({
+      icon: "award",
+      title: "VIP Added",
+      message: `${message.sender} added to your Backstage Line`,
+      color: "#F59E0B",
+    });
   };
 
   const handleSendReply = () => {
     if (!replyText.trim()) return;
     onReply(replyText.trim());
+    showBanner({
+      icon: "send",
+      title: "Reply Sent",
+      message: `Replied to ${message.sender}`,
+      color: "#8B5CF6",
+    });
     setReplyText("");
     setShowReply(false);
   };
@@ -112,19 +146,37 @@ export function MessageCard({
       {expanded && (
         <View style={[styles.actions, { borderTopColor: colors.border }]}>
           <Pressable onPress={onPin} style={styles.action}>
-            <Feather name="bookmark" size={16} color={message.isPinned ? colors.primary : colors.mutedForeground} />
-            <Text style={[styles.actionText, { color: message.isPinned ? colors.primary : colors.mutedForeground }]}>
+            <Feather
+              name="bookmark"
+              size={16}
+              color={message.isPinned ? colors.primary : colors.mutedForeground}
+            />
+            <Text
+              style={[
+                styles.actionText,
+                { color: message.isPinned ? colors.primary : colors.mutedForeground },
+              ]}
+            >
               {message.isPinned ? "Unpin" : "Pin"}
             </Text>
           </Pressable>
           <Pressable onPress={onSave} style={styles.action}>
-            <Feather name="star" size={16} color={message.isSaved ? "#F59E0B" : colors.mutedForeground} />
-            <Text style={[styles.actionText, { color: message.isSaved ? "#F59E0B" : colors.mutedForeground }]}>
+            <Feather
+              name="star"
+              size={16}
+              color={message.isSaved ? "#F59E0B" : colors.mutedForeground}
+            />
+            <Text
+              style={[
+                styles.actionText,
+                { color: message.isSaved ? "#F59E0B" : colors.mutedForeground },
+              ]}
+            >
               {message.isSaved ? "Saved" : "Save"}
             </Text>
           </Pressable>
           {!message.isVIP && (
-            <Pressable onPress={onMakeVIP} style={styles.action}>
+            <Pressable onPress={handleMakeVIP} style={styles.action}>
               <Feather name="award" size={16} color={colors.mutedForeground} />
               <Text style={[styles.actionText, { color: colors.mutedForeground }]}>VIP</Text>
             </Pressable>

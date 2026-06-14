@@ -20,6 +20,9 @@ interface MessagesContextType extends MessagesState {
   moveToLiveLine: (id: string) => void;
   replyToMessage: (id: string, reply: string) => void;
   updateCollabStatus: (id: string, status: CollabStatus) => void;
+  addFanMessage: (msg: FanMessage) => void;
+  resetMessages: () => void;
+  unblockAll: () => void;
 }
 
 const MessagesContext = createContext<MessagesContextType | null>(null);
@@ -142,6 +145,34 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
     [persistCollab]
   );
 
+  const addFanMessage = useCallback(
+    (msg: FanMessage) => {
+      setFanMail((prev) => {
+        const next = [msg, ...prev];
+        persistFanMail(next);
+        return next;
+      });
+    },
+    [persistFanMail]
+  );
+
+  const resetMessages = useCallback(() => {
+    setFanMail(INITIAL_FAN_MESSAGES);
+    setCollab(INITIAL_COLLAB_MESSAGES);
+    AsyncStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ fanMail: INITIAL_FAN_MESSAGES, collab: INITIAL_COLLAB_MESSAGES })
+    ).catch(() => {});
+  }, []);
+
+  const unblockAll = useCallback(() => {
+    setFanMail((prev) => {
+      const next = prev.map((m) => ({ ...m, isBlocked: false }));
+      persistFanMail(next);
+      return next;
+    });
+  }, [persistFanMail]);
+
   return (
     <MessagesContext.Provider
       value={{
@@ -155,6 +186,9 @@ export function MessagesProvider({ children }: { children: React.ReactNode }) {
         moveToLiveLine,
         replyToMessage,
         updateCollabStatus,
+        addFanMessage,
+        resetMessages,
+        unblockAll,
       }}
     >
       {children}

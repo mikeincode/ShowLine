@@ -53,6 +53,7 @@ interface ShowLineContextType extends ShowLineState {
   removeVIP: (id: string) => void;
   addBlocked: (contact: BlockedContact) => void;
   removeBlocked: (id: string) => void;
+  clearBlockedContacts: () => void;
 }
 
 const ShowLineContext = createContext<ShowLineContextType | null>(null);
@@ -163,6 +164,15 @@ export function ShowLineProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  const clearBlockedContacts = useCallback(() => {
+    setState((prev) => {
+      const updated = { ...prev, blockedContacts: [] };
+      const { isLoaded: _l, ...toSave } = updated;
+      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave)).catch(() => {});
+      return updated;
+    });
+  }, []);
+
   return (
     <ShowLineContext.Provider
       value={{
@@ -174,6 +184,7 @@ export function ShowLineProvider({ children }: { children: React.ReactNode }) {
         removeVIP,
         addBlocked,
         removeBlocked,
+        clearBlockedContacts,
       }}
     >
       {children}

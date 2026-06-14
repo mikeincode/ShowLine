@@ -13,9 +13,10 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { LineCard } from "@/components/LineCard";
-import { useShowLine } from "@/context/ShowLineContext";
+import { useBanner } from "@/context/BannerContext";
 import { useLiveLine } from "@/context/LiveLineContext";
 import { useMessages } from "@/context/MessagesContext";
+import { useShowLine } from "@/context/ShowLineContext";
 import { useColors } from "@/hooks/useColors";
 
 export default function DashboardScreen() {
@@ -25,6 +26,7 @@ export default function DashboardScreen() {
   const { lineStatuses, updateLineStatus } = useShowLine();
   const { isLive, startSession } = useLiveLine();
   const { fanMailMessages, collabMessages } = useMessages();
+  const { showBanner } = useBanner();
 
   const topPad = Platform.OS === "web" ? 67 : insets.top;
   const bottomPad = Platform.OS === "web" ? 84 : 0;
@@ -35,15 +37,27 @@ export default function DashboardScreen() {
 
   const toggleFanMail = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    updateLineStatus("fanmail", lineStatuses.fanmail === "Open" ? "Closed" : "Open");
+    const next = lineStatuses.fanmail === "Open" ? "Closed" : "Open";
+    updateLineStatus("fanmail", next);
+    showBanner({
+      icon: "mail",
+      title: next === "Open" ? "FanMail Opened" : "FanMail Closed",
+      message: next === "Open" ? "Fans can now send you messages" : "New messages are paused",
+      color: "#8B5CF6",
+    });
   };
 
   const toggleCollab = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    updateLineStatus(
-      "collab",
-      lineStatuses.collab === "Collect Only" ? "Closed" : "Collect Only"
-    );
+    const next = lineStatuses.collab === "Collect Only" ? "Closed" : "Collect Only";
+    updateLineStatus("collab", next);
+    showBanner({
+      icon: "briefcase",
+      title: next === "Collect Only" ? "Collab Line Opened" : "Collab Line Closed",
+      message:
+        next === "Collect Only" ? "Accepting business inquiries" : "Collab inquiries paused",
+      color: "#3B82F6",
+    });
   };
 
   return (
@@ -63,7 +77,10 @@ export default function DashboardScreen() {
         </View>
         <Pressable
           onPress={() => router.push("/upgrade")}
-          style={[styles.proBadge, { backgroundColor: colors.primary + "22", borderColor: colors.primary + "44" }]}
+          style={[
+            styles.proBadge,
+            { backgroundColor: colors.primary + "22", borderColor: colors.primary + "44" },
+          ]}
         >
           <Feather name="zap" size={12} color={colors.primary} />
           <Text style={[styles.proBadgeText, { color: colors.primary }]}>Upgrade</Text>
@@ -77,12 +94,16 @@ export default function DashboardScreen() {
             <Feather name="phone" size={18} color={colors.primary} />
           </View>
           <View>
-            <Text style={[styles.numberLabel, { color: colors.mutedForeground }]}>Your Creator Line</Text>
+            <Text style={[styles.numberLabel, { color: colors.mutedForeground }]}>
+              Your Creator Line
+            </Text>
             <Text style={[styles.number, { color: colors.foreground }]}>(555) 014-SHOW</Text>
           </View>
         </View>
         <View style={[styles.comingSoonBadge, { backgroundColor: colors.muted }]}>
-          <Text style={[styles.comingSoonText, { color: colors.mutedForeground }]}>Real # Coming Soon</Text>
+          <Text style={[styles.comingSoonText, { color: colors.mutedForeground }]}>
+            Real # Coming Soon
+          </Text>
         </View>
       </View>
 
@@ -120,7 +141,15 @@ export default function DashboardScreen() {
         primaryActionLabel={isLive ? "Go Live" : "Start Live"}
         primaryActionIcon={isLive ? "radio" : "play-circle"}
         onPrimaryAction={() => {
-          if (!isLive) startSession();
+          if (!isLive) {
+            startSession();
+            showBanner({
+              icon: "radio",
+              title: "LiveLine Started",
+              message: "Your line is now live and taking messages",
+              color: "#EF4444",
+            });
+          }
           router.push("/(tabs)/liveline");
         }}
         secondaryActionLabel="Manage"
@@ -154,7 +183,11 @@ export default function DashboardScreen() {
         accentColor="#3B82F6"
         status={lineStatuses.collab}
         unreadCount={collabUnread}
-        lastMessage={collabMessages[0]?.company ? `${collabMessages[0].company} — ${collabMessages[0].content.slice(0, 40)}...` : undefined}
+        lastMessage={
+          collabMessages[0]?.company
+            ? `${collabMessages[0].company} — ${collabMessages[0].content.slice(0, 40)}...`
+            : undefined
+        }
         onPress={() => router.push("/collab")}
         primaryActionLabel={lineStatuses.collab === "Closed" ? "Open Line" : "Close Line"}
         primaryActionIcon={lineStatuses.collab === "Closed" ? "check-circle" : "x-circle"}
