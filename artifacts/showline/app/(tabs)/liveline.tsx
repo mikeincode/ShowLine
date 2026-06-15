@@ -209,45 +209,53 @@ export default function LiveLineScreen() {
     });
   };
 
+  const doEndSession = () => {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+    const now = Date.now();
+    const start = sessionStart ? new Date(sessionStart).getTime() : now;
+    const recap: SessionRecap = {
+      id: makeId(),
+      startTime: sessionStart ?? new Date().toISOString(),
+      endTime: new Date().toISOString(),
+      durationMs: now - start,
+      totalMessages: liveQueue.length,
+      messagesPinned: liveQueue.filter((m) => m.isPinned).length,
+      messagesAnswered: liveQueue.filter((m) => m.isAnswered).length,
+      fansVIPAdded: sessionVIPAdded,
+      contactsBlocked: sessionBlockedCount,
+      topTopics: extractTopics(liveQueue),
+      pinnedMessages: liveQueue.filter((m) => m.isPinned),
+      answeredMessages: liveQueue.filter((m) => m.isAnswered),
+    };
+    addSession(recap);
+    endSession();
+    updateLineStatus("liveline", "Closed");
+    showBanner({
+      icon: "clipboard",
+      title: "Post-Show Recap Saved!",
+      message: `${recap.totalMessages} messages · ${recap.messagesPinned} pinned · ${formatDuration(recap.durationMs)}`,
+      color: "#8B5CF6",
+      duration: 4500,
+    });
+  };
+
   const handleEnd = () => {
+    if (Platform.OS === "web") {
+      // Alert.alert is a no-op on web; use the browser's built-in confirm dialog
+      // eslint-disable-next-line no-alert
+      if ((global as unknown as { confirm: (msg: string) => boolean }).confirm(
+        "End Live Session?\n\nYour queue will be saved as a Post-Show Recap before clearing."
+      )) {
+        doEndSession();
+      }
+      return;
+    }
     Alert.alert(
       "End Live Session",
       "Your queue will be saved as a Post-Show Recap before clearing.",
       [
         { text: "Cancel", style: "cancel" },
-        {
-          text: "End & Save Recap",
-          style: "destructive",
-          onPress: () => {
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-            const now = Date.now();
-            const start = sessionStart ? new Date(sessionStart).getTime() : now;
-            const recap: SessionRecap = {
-              id: makeId(),
-              startTime: sessionStart ?? new Date().toISOString(),
-              endTime: new Date().toISOString(),
-              durationMs: now - start,
-              totalMessages: liveQueue.length,
-              messagesPinned: liveQueue.filter((m) => m.isPinned).length,
-              messagesAnswered: liveQueue.filter((m) => m.isAnswered).length,
-              fansVIPAdded: sessionVIPAdded,
-              contactsBlocked: sessionBlockedCount,
-              topTopics: extractTopics(liveQueue),
-              pinnedMessages: liveQueue.filter((m) => m.isPinned),
-              answeredMessages: liveQueue.filter((m) => m.isAnswered),
-            };
-            addSession(recap);
-            endSession();
-            updateLineStatus("liveline", "Closed");
-            showBanner({
-              icon: "clipboard",
-              title: "Post-Show Recap Saved!",
-              message: `${recap.totalMessages} messages · ${recap.messagesPinned} pinned · ${formatDuration(recap.durationMs)}`,
-              color: "#8B5CF6",
-              duration: 4500,
-            });
-          },
-        },
+        { text: "End & Save Recap", style: "destructive", onPress: doEndSession },
       ]
     );
   };
