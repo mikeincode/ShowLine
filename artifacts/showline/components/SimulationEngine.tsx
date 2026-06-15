@@ -1,5 +1,5 @@
 import * as Haptics from "expo-haptics";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Platform } from "react-native";
 
 import { useBanner } from "@/context/BannerContext";
@@ -10,8 +10,11 @@ import {
   LIVE_INTERVAL_MS,
   useSimulation,
 } from "@/context/SimulationContext";
+import { useShowLine } from "@/context/ShowLineContext";
 import { generateFanMessage, generateLiveQueueItem } from "@/data/simulatorData";
 import type { FanMessage, LiveQueueItem } from "@/types";
+
+const MAX_SIMULATED_FANMAIL = 60;
 
 function makeId(): string {
   return "sim_" + Date.now().toString() + Math.random().toString(36).substr(2, 9);
@@ -19,15 +22,20 @@ function makeId(): string {
 
 export function SimulationEngine() {
   const { enabled, frequency, isLoaded } = useSimulation();
-  const { addFanMessage } = useMessages();
+  const { onboardingCompleted } = useShowLine();
+  const { addFanMessage, fanMailMessages } = useMessages();
   const { isLive, addLiveMessage } = useLiveLine();
   const { showBanner } = useBanner();
 
+  const fanMailCountRef = useRef(fanMailMessages.length);
+  fanMailCountRef.current = fanMailMessages.length;
+
   useEffect(() => {
-    if (!isLoaded || !enabled) return;
+    if (!isLoaded || !enabled || !onboardingCompleted) return;
 
     const ms = FANMAIL_INTERVAL_MS[frequency];
     const timer = setInterval(() => {
+      if (fanMailCountRef.current >= MAX_SIMULATED_FANMAIL) return;
       const partial = generateFanMessage();
       const msg: FanMessage = { ...partial, id: makeId() };
       addFanMessage(msg);
@@ -41,10 +49,10 @@ export function SimulationEngine() {
     }, ms);
 
     return () => clearInterval(timer);
-  }, [isLoaded, enabled, frequency, addFanMessage, showBanner]);
+  }, [isLoaded, enabled, frequency, onboardingCompleted, addFanMessage, showBanner]);
 
   useEffect(() => {
-    if (!isLoaded || !enabled || !isLive) return;
+    if (!isLoaded || !enabled || !onboardingCompleted || !isLive) return;
 
     const ms = LIVE_INTERVAL_MS[frequency];
     const timer = setInterval(() => {
@@ -66,7 +74,7 @@ export function SimulationEngine() {
     }, ms);
 
     return () => clearInterval(timer);
-  }, [isLoaded, enabled, frequency, isLive, addLiveMessage, showBanner]);
+  }, [isLoaded, enabled, frequency, onboardingCompleted, isLive, addLiveMessage, showBanner]);
 
   return null;
 }

@@ -246,7 +246,7 @@ export default function DashboardScreen() {
         unreadCount={0}
         lastMessage={isLive ? "Session active — taking messages" : "No active session"}
         onPress={() => router.push("/(tabs)/liveline")}
-        primaryActionLabel={isLive ? "Go Live" : "Start Live"}
+        primaryActionLabel={isLive ? "View Live" : "Start Live"}
         primaryActionIcon={isLive ? "radio" : "play-circle"}
         onPrimaryAction={() => {
           if (!isLive) {
@@ -310,7 +310,7 @@ export default function DashboardScreen() {
 
 const styles = StyleSheet.create({
   scroll: { flex: 1 },
-  content: { paddingHorizontal: 16, gap: 4 },
+  content: { paddingHorizontal: 16, gap: 12 },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",

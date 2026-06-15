@@ -1,1 +1,2 @@
 - [ShowLine TS quirks](showline-ts-quirks.md) — three typecheck fixes needed for React 19 + Feather + colors cast; zero errors after fix.
+- [ShowLine simulation defaults](showline-sim-defaults.md) — SimulationContext must default to enabled:false, frequency:"low"; SimulationEngine must guard on onboardingCompleted before firing.

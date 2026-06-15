@@ -109,7 +109,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 16,
     gap: 12,
-    marginBottom: 12,
   },
   iconBar: {
     flexDirection: "row",

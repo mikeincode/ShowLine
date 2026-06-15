@@ -17,7 +17,7 @@ import { useShowLine } from "@/context/ShowLineContext";
 import { useColors } from "@/hooks/useColors";
 import type { CreatorType, UseCase } from "@/types";
 
-const CREATOR_TYPES: { id: CreatorType; label: string; icon: string }[] = [
+const ALL_CREATOR_TYPES: { id: CreatorType; label: string; icon: string }[] = [
   { id: "podcaster", label: "Podcaster", icon: "mic" },
   { id: "streamer", label: "Streamer", icon: "video" },
   { id: "tiktokyoutube", label: "TikTok / YouTube", icon: "youtube" },
@@ -26,14 +26,16 @@ const CREATOR_TYPES: { id: CreatorType; label: string; icon: string }[] = [
   { id: "coach", label: "Coach / Educator", icon: "book-open" },
   { id: "other", label: "Other Creator", icon: "star" },
 ];
+const CREATOR_TYPES = Array.from(new Map(ALL_CREATOR_TYPES.map((c) => [c.id, c])).values());
 
-const USE_CASES: { id: UseCase; label: string; desc: string; icon: string }[] = [
+const ALL_USE_CASES: { id: UseCase; label: string; desc: string; icon: string }[] = [
   { id: "live_callins", label: "Live Call-Ins", desc: "Take live questions during streams", icon: "phone-incoming" },
   { id: "fan_questions", label: "Fan Questions", desc: "Collect questions from your audience", icon: "help-circle" },
-  { id: "topic_ideas", label: "Topic Ideas", desc: "Let fans pitch content ideas", icon: "lightbulb" as any },
+  { id: "topic_ideas", label: "Topic Ideas", desc: "Let fans pitch content ideas", icon: "zap" },
   { id: "vip_fans", label: "VIP Superfans", desc: "Give your top fans a private channel", icon: "award" },
   { id: "collabs", label: "Collabs & Brands", desc: "Separate business inquiries from fan mail", icon: "briefcase" },
 ];
+const USE_CASES = Array.from(new Map(ALL_USE_CASES.map((u) => [u.id, u])).values());
 
 export default function OnboardingScreen() {
   const colors = useColors();

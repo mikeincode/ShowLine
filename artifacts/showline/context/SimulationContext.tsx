@@ -33,8 +33,8 @@ const SimulationContext = createContext<SimulationContextType | null>(null);
 export function SimulationProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<SimulationState>({
     isLoaded: false,
-    enabled: true,
-    frequency: "normal",
+    enabled: false,
+    frequency: "low",
   });
 
   useEffect(() => {
